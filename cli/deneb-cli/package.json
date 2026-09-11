@@ -1,6 +1,6 @@
 {
   "name": "@deneb-ui/cli",
-  "version": "2.0.37",
+  "version": "2.0.38",
   "description": "Official DENEB CLI — scaffold, convert, validate, and package Fivora-ready storefront templates.",
   "bin": {
     "deneb": "bin/index.js",
@@ -49,7 +49,7 @@
   "license": "MIT",
   "dependencies": {
     "@babel/parser": "^7.28.0",
-    "@deneb-ui/core": "^2.0.37",
+    "@deneb-ui/core": "^2.0.38",
     "adm-zip": "^0.6.0",
     "recast": "^0.23.11"
   },
