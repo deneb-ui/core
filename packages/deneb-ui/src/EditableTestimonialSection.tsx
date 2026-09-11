@@ -67,13 +67,13 @@ function StarSvg({ filled = true, size = 16 }: { filled?: boolean; size?: number
 
 function TestimonialCard({
   item,
-  idx,
+  index,
   basePath,
   maxStars,
   cardClassName,
 }: {
   item: TestimonialItem;
-  idx: number;
+  index: number;
   basePath: string;
   maxStars: number;
   cardClassName?: string;
@@ -126,7 +126,7 @@ function TestimonialCard({
 
   return (
     <div
-      data-preview-item-path={`${basePath}.testimonials[${idx}]`}
+      data-preview-item-path={`testimonials.testimonials[${index}]`}
       className={`relative p-7 sm:p-8 rounded-3xl bg-[#ffffff] border border-[#3d2114]/12 shadow-md hover:shadow-xl transition-all duration-300 flex flex-col justify-between space-y-6 ${cardClassName || ''}`.trim()}
     >
       <div className="space-y-4">
@@ -134,7 +134,7 @@ function TestimonialCard({
         <div className="flex items-center justify-between gap-2">
           {Boolean(currentItem.tag) && (
             <span
-              data-preview-field-path={`${basePath}.testimonials[${idx}].tag`}
+              data-preview-field-path={`testimonials.testimonials[${index}].tag`}
               className="px-3 py-1 rounded-full bg-[#f5ebe1] text-[#84431b] text-[11px] uppercase tracking-wider font-extrabold border border-[#3d2114]/10"
             >
               {tagText}
@@ -153,7 +153,7 @@ function TestimonialCard({
             </div>
             <span
               ref={ratingRef}
-              data-preview-field-path={`${basePath}.testimonials[${idx}].rating`}
+              data-preview-field-path={`testimonials.testimonials[${index}].rating`}
               data-fivora-rating-text="true"
               className="text-xs font-black text-[#fa7014] bg-[#fa7014]/10 px-1.5 py-0.5 rounded-md border border-[#fa7014]/20 group-hover:bg-[#fa7014]/20 transition-colors tabular-nums"
               title="Star count (1-5)"
@@ -165,7 +165,7 @@ function TestimonialCard({
 
         {/* Quote Body */}
         <blockquote
-          data-preview-field-path={`${basePath}.testimonials[${idx}].quote`}
+          data-preview-field-path={`testimonials.testimonials[${index}].quote`}
           className="font-serif-italic text-base sm:text-lg text-[#2b170e] leading-relaxed"
         >
           &ldquo;{quoteText}&rdquo;
@@ -177,18 +177,18 @@ function TestimonialCard({
         <img
           src={authorAvatar}
           alt={authorName}
-          data-preview-field-path={`${basePath}.testimonials[${idx}].avatar`}
+          data-preview-field-path={`testimonials.testimonials[${index}].avatar`}
           className="w-12 h-12 rounded-full object-cover border border-[#3d2114]/15 shadow-sm"
         />
         <div>
           <h4
-            data-preview-field-path={`${basePath}.testimonials[${idx}].author`}
+            data-preview-field-path={`testimonials.testimonials[${index}].author`}
             className="font-heading font-black text-sm sm:text-base text-[#2b170e]"
           >
             {authorName}
           </h4>
           <p
-            data-preview-field-path={`${basePath}.testimonials[${idx}].role`}
+            data-preview-field-path={`testimonials.testimonials[${index}].role`}
             className="text-xs text-[#786154] font-medium leading-snug"
           >
             {authorRole}
@@ -216,15 +216,15 @@ export function EditableTestimonialSection({
     if (list.length === 0) {
       return DEFAULT_TESTIMONIALS;
     }
-    return list.map((item, idx) => {
-      const fallback = DEFAULT_TESTIMONIALS[idx % DEFAULT_TESTIMONIALS.length] || DEFAULT_TESTIMONIALS[0];
+    return list.map((item, index) => {
+      const fallback = DEFAULT_TESTIMONIALS[index % DEFAULT_TESTIMONIALS.length] || DEFAULT_TESTIMONIALS[0];
       if (!item || typeof item !== 'object') {
-        return { ...fallback, id: `fallback-${idx}` };
+        return { ...fallback, id: `fallback-${index}` };
       }
       return {
         ...fallback,
         ...item,
-        id: item.id || `testimonial-${idx}`,
+        id: item.id || `testimonial-${index}`,
         rating: item.rating !== undefined && item.rating !== null ? item.rating : 5,
       };
     });
@@ -242,17 +242,17 @@ export function EditableTestimonialSection({
         <div className="text-center max-w-3xl mx-auto space-y-3 mb-12 sm:mb-16">
           {badge && (
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#ede0d4] text-[#3d2114] text-xs uppercase tracking-widest font-black border border-[#3d2114]/15">
-              <span data-preview-field-path={`${basePath}.badge`}>{badge}</span>
+              <span data-preview-field-path={`testimonials.badge`}>{badge}</span>
             </div>
           )}
           <h2
-            data-preview-field-path={`${basePath}.heading`}
+            data-preview-field-path={`testimonials.heading`}
             className="font-heading text-2xl xs:text-3xl sm:text-4xl lg:text-5xl font-black text-[#2b170e] tracking-tight"
           >
             {heading}
           </h2>
           <p
-            data-preview-field-path={`${basePath}.subheading`}
+            data-preview-field-path={`testimonials.subheading`}
             className="text-xs sm:text-base text-[#5c493f] leading-relaxed"
           >
             {subheading}
@@ -261,14 +261,14 @@ export function EditableTestimonialSection({
 
         {/* Testimonials Grid */}
         <div
-          data-preview-list-path={`${basePath}.testimonials`}
+          data-preview-list-path={`testimonials.testimonials`}
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8"
         >
-          {items.map((item, idx) => (
+          {items.map((item, index) => (
             <TestimonialCard
-              key={item.id || `testimonial-${idx}`}
+              key={item.id || `testimonial-${index}`}
               item={item}
-              idx={idx}
+              index={index}
               basePath={basePath}
               maxStars={maxStars}
               cardClassName={cardClassName}
