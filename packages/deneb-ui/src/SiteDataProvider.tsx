@@ -16,6 +16,8 @@ import {
 import { DenebComponentStyles } from './DenebComponentStyles';
 import { FontLoader } from './fonts/FontLoader';
 import { ResponsiveBaseStyles } from './ResponsiveBaseStyles';
+import type { ProductItem } from './EditableProductCard';
+import type { ServiceItem } from './EditableServiceCard';
 
 export const DENEB_PREVIEW_DATA_MESSAGE = 'DENEB_PREVIEW_SITE_DATA';
 export const PREVIEW_DATA_MESSAGE = 'FIVORA_PREVIEW_SITE_DATA';
@@ -45,10 +47,37 @@ const LEGACY_SITE_DATA_GLOBAL_KEY = previousPreviewStorageKey('SITE_DATA');
 
 export type GenericRecord = Record<string, any>;
 
+export interface SiteDataApiConfig {
+  baseUrl?: string | null;
+  catalogUrl?: string | null;
+  contactUrl?: string | null;
+  analyticsUrl?: string | null;
+  [key: string]: unknown;
+}
+
+export interface SiteDataProject {
+  id?: string | null;
+  slug?: string | null;
+  title?: string | null;
+  status?: string | null;
+  [key: string]: unknown;
+}
+
+export interface SiteInstanceData {
+  id?: string | null;
+  slug?: string | null;
+  domain?: string | null;
+  subdomain?: string | null;
+  customDomain?: string | null;
+  liveUrl?: string | null;
+  [key: string]: unknown;
+}
+
 export type SiteData = {
-  project?: {
-    id?: string | null;
-  } | null;
+  project?: SiteDataProject | null;
+  siteInstance?: SiteInstanceData | null;
+  api?: SiteDataApiConfig | null;
+  shop?: GenericRecord | null;
   merchant?: GenericRecord | null;
   template?: {
     structure?: {
@@ -58,6 +87,8 @@ export type SiteData = {
   } | null;
   requirements?: { requiredPages?: string[] | null } | null;
   content?: GenericRecord | null;
+  media?: Record<string, string[]> | null;
+  seo?: GenericRecord | null;
   styles?: GenericRecord | null;
   [key: string]: unknown;
 };
@@ -202,12 +233,23 @@ export interface SiteDataProviderProps<T = SiteData> {
   children: ReactNode;
   initialSiteData?: T;
   fallbackSiteData?: T;
+  /**
+   * Optional custom live catalog endpoint.
+   * If omitted, defaults to `/api/site-catalog/${slug}/live-data`.
+   */
+  liveCatalogEndpoint?: string;
+  /**
+   * Optional site slug for live rehydration. If omitted, resolved from initialSiteData.
+   */
+  siteSlug?: string;
 }
 
 export function SiteDataProvider<T extends SiteData = SiteData>({
   children,
   initialSiteData,
   fallbackSiteData,
+  liveCatalogEndpoint,
+  siteSlug,
 }: SiteDataProviderProps<T>) {
   // SSR HTML and the first client paint must match. Reading sessionStorage here
   // causes React hydration error #418 when a previous preview left merchant
@@ -215,6 +257,95 @@ export function SiteDataProvider<T extends SiteData = SiteData>({
   const [siteData, setSiteData] = useState<T>(() => {
     return (initialSiteData ?? fallbackSiteData ?? ({} as T));
   });
+
+  // Real-time catalog & theme hydration for standalone live sites
+  useEffect(() => {
+    if (typeof window === "undefined" || window.parent !== window) return;
+
+    const candidateSlug =
+      siteSlug ||
+      initialSiteData?.siteInstance?.slug ||
+      initialSiteData?.project?.slug ||
+      initialSiteData?.project?.id;
+
+    const endpoint =
+      liveCatalogEndpoint ||
+      initialSiteData?.api?.catalogUrl ||
+      (candidateSlug && initialSiteData?.api?.baseUrl
+        ? `${initialSiteData.api.baseUrl.replace(/\/+$/, '')}/site-catalog/${candidateSlug}/live-data`
+        : candidateSlug
+          ? `/site-catalog/${candidateSlug}/live-data`
+          : null);
+
+    if (!endpoint) return;
+
+    const controller = new AbortController();
+
+    fetch(endpoint, {
+      signal: controller.signal,
+      headers: { Accept: "application/json" },
+    })
+      .then((res) => (res.ok ? res.json() : null))
+      .then((live) => {
+        if (!live || !isRecord(live)) return;
+
+        setSiteData((current) => {
+          const currentContent = isRecord(current.content) ? current.content : {};
+          const currentHome = isRecord(currentContent.home) ? currentContent.home : null;
+
+          const nextProducts = Array.isArray(live.products)
+            ? live.products
+            : currentContent.products;
+          const nextServices = Array.isArray(live.services)
+            ? live.services
+            : currentContent.services;
+
+          return {
+            ...current,
+            content: {
+              ...currentContent,
+              ...(nextProducts !== undefined ? { products: nextProducts } : {}),
+              ...(nextServices !== undefined ? { services: nextServices } : {}),
+              ...(currentHome
+                ? {
+                    home: {
+                      ...currentHome,
+                      ...(nextProducts !== undefined && 'products' in currentHome
+                        ? { products: nextProducts }
+                        : {}),
+                      ...(nextServices !== undefined && 'services' in currentHome
+                        ? { services: nextServices }
+                        : {}),
+                      ...(nextProducts !== undefined && 'featuredProducts' in currentHome
+                        ? { featuredProducts: nextProducts }
+                        : {}),
+                    },
+                  }
+                : {}),
+            },
+          } as T;
+        });
+
+        // Dynamic theme variable injection for instant color updates
+        if (isRecord(live.theme)) {
+          const rootStyle = document.documentElement.style;
+          if (typeof live.theme.primaryColor === "string") {
+            rootStyle.setProperty("--brand-primary", live.theme.primaryColor);
+          }
+          if (typeof live.theme.secondaryColor === "string") {
+            rootStyle.setProperty("--brand-secondary", live.theme.secondaryColor);
+          }
+          if (typeof live.theme.accentColor === "string") {
+            rootStyle.setProperty("--brand-accent", live.theme.accentColor);
+          }
+        }
+      })
+      .catch(() => {
+        // Gracefully keep pre-rendered static fallback if live API is unreachable
+      });
+
+    return () => controller.abort();
+  }, [liveCatalogEndpoint, siteSlug, initialSiteData]);
 
   useEffect(() => {
     let parentOrigin = resolveParentOrigin();
@@ -429,3 +560,75 @@ export const useDenebData = useSiteData;
 export const DenebDataContext = SiteDataContext;
 export type DenebData = SiteData;
 
+
+/**
+ * Hook to retrieve products cleanly from SiteData, supporting both
+ * top-level content.products and nested content.home.products.
+ */
+export function useProducts(fallback: ProductItem[] = []): ProductItem[] {
+  const siteData = useSiteData();
+  const content = isRecord(siteData?.content) ? siteData.content : null;
+  if (!content) return fallback;
+
+  if (Array.isArray(content.products) && content.products.length > 0) {
+    return content.products as ProductItem[];
+  }
+  const home = isRecord(content.home) ? content.home : null;
+  if (home) {
+    if (Array.isArray(home.products) && home.products.length > 0) {
+      return home.products as ProductItem[];
+    }
+    if (Array.isArray(home.featuredProducts) && home.featuredProducts.length > 0) {
+      return home.featuredProducts as ProductItem[];
+    }
+  }
+  return fallback;
+}
+
+/**
+ * Hook to retrieve services cleanly from SiteData, supporting both
+ * top-level content.services and nested content.home.services.
+ */
+export function useServices(fallback: ServiceItem[] = []): ServiceItem[] {
+  const siteData = useSiteData();
+  const content = isRecord(siteData?.content) ? siteData.content : null;
+  if (!content) return fallback;
+
+  if (Array.isArray(content.services) && content.services.length > 0) {
+    return content.services as ServiceItem[];
+  }
+  const home = isRecord(content.home) ? content.home : null;
+  if (home) {
+    if (Array.isArray(home.services) && home.services.length > 0) {
+      return home.services as ServiceItem[];
+    }
+    if (Array.isArray(home.featuredServices) && home.featuredServices.length > 0) {
+      return home.featuredServices as ServiceItem[];
+    }
+  }
+  return fallback;
+}
+
+/**
+ * Hook to access official Fivora backend API endpoints (catalogUrl, contactUrl, analyticsUrl).
+ */
+export function useSiteApi(): SiteDataApiConfig | null {
+  const siteData = useSiteData();
+  return (siteData?.api as SiteDataApiConfig) ?? null;
+}
+
+/**
+ * Hook to access full catalog metadata and live status.
+ */
+export function useSiteCatalog() {
+  const products = useProducts();
+  const services = useServices();
+  const siteData = useSiteData();
+  return {
+    products,
+    services,
+    project: siteData?.project ?? null,
+    siteInstance: siteData?.siteInstance ?? null,
+    api: siteData?.api ?? null,
+  };
+}

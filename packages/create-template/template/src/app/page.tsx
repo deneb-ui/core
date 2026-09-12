@@ -5,12 +5,14 @@ import {
   contentObject,
   contentText,
   useSiteData,
+  useProducts,
 } from '@/lib/siteDataContext';
 import { pageRoute, withBasePath } from '@/lib/utils';
 import {
   EditableText,
   EditableList,
   EditableCard,
+  EditableProductCard,
   ListActionCta,
 } from '@deneb-ui/ui';
 
@@ -24,6 +26,7 @@ export default function HomePage() {
   const content = contentObject(siteData.content);
   const home = contentObject(content.home);
   const features = contentList(home.features);
+  const products = useProducts();
   const demoCta = contentObject(
     (contentList(home.demoPreOrderCta)[0] as Record<string, unknown> | undefined) ?? {}
   );

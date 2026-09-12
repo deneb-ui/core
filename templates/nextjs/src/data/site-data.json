@@ -1,5 +1,10 @@
 {
-  "project": { "id": "starter-demo", "title": "Fivora Starter Demo", "status": "APPROVED" },
+  "project": {
+    "id": "starter-demo",
+    "slug": "starter-demo",
+    "title": "Fivora Starter Demo",
+    "status": "APPROVED"
+  },
   "merchant": {
     "businessName": "Fivora Store",
     "description": "A modern high-converting digital storefront built on the Fivora platform."
@@ -9,7 +14,12 @@
     "name": "Fivora Starter",
     "engine": "NEXT_STATIC_EXPORT",
     "structure": {
-      "pages": ["home", "about_us", "services", "contact"],
+      "pages": [
+        "home",
+        "about_us",
+        "services",
+        "contact"
+      ],
       "theme": {
         "primaryColor": "#016a7e",
         "secondaryColor": "#0a1931",
@@ -25,7 +35,12 @@
     }
   },
   "requirements": {
-    "requiredPages": ["home", "about_us", "services", "contact"],
+    "requiredPages": [
+      "home",
+      "about_us",
+      "services",
+      "contact"
+    ],
     "requiredFeatures": []
   },
   "content": {
@@ -60,11 +75,27 @@
       "introBody": "Every editable value comes directly from Fivora site data with auto-balancing layouts, responsive typography, and strict contract validation out of the box.",
       "featuresHeading": "Why build with the Fivora Authoring Kit?",
       "features": [
-        { "title": "Auto-Balancing Layouts", "body": "Cards, grids, and containers automatically balance and fill space seamlessly across all screen sizes." },
-        { "title": "Strict Visual Editing", "body": "Direct bindings enable merchants to click, edit, and preview changes without breaking template styles." },
-        { "title": "1-Click Clean Packaging", "body": "Built-in zip command strips heavy caches, node_modules, and git files so uploads pass instantly." }
+        {
+          "title": "Auto-Balancing Layouts",
+          "body": "Cards, grids, and containers automatically balance and fill space seamlessly across all screen sizes."
+        },
+        {
+          "title": "Strict Visual Editing",
+          "body": "Direct bindings enable merchants to click, edit, and preview changes without breaking template styles."
+        },
+        {
+          "title": "1-Click Clean Packaging",
+          "body": "Built-in zip command strips heavy caches, node_modules, and git files so uploads pass instantly."
+        }
       ],
-      "demoPreOrderCta": [{ "buttonLabel": "Book a Demo", "buttonUrl": "https://wa.me/94771234567" }]
+      "demoPreOrderCta": [
+        {
+          "buttonLabel": "Book a Demo",
+          "buttonUrl": "https://wa.me/94771234567"
+        }
+      ],
+      "productsHeading": "Featured Store Products",
+      "productsSummary": "Live inventory and pricing updated in real time from your Fivora Shop Owner panel."
     },
     "about": {
       "heading": "Built for the next generation of online storefronts",
@@ -75,9 +106,21 @@
       "historyHeading": "Where we started",
       "history": "We began as a small team helping local businesses move online. Today our templates power visual editing labs, strict Fivora contracts, and one-click packaging for developers worldwide.",
       "collageImages": [
-        { "id": "studio", "image": "/placeholder.svg", "caption": "Design studio" },
-        { "id": "build", "image": "/placeholder.svg", "caption": "Build & test" },
-        { "id": "ship", "image": "/placeholder.svg", "caption": "Ship to Fivora" }
+        {
+          "id": "studio",
+          "image": "/placeholder.svg",
+          "caption": "Design studio"
+        },
+        {
+          "id": "build",
+          "image": "/placeholder.svg",
+          "caption": "Build & test"
+        },
+        {
+          "id": "ship",
+          "image": "/placeholder.svg",
+          "caption": "Ship to Fivora"
+        }
       ]
     },
     "servicesPage": {
@@ -90,14 +133,22 @@
         "name": "Visual Editing Lab",
         "description": "Simulate how merchants customize your template in real time with the built-in local development lab.",
         "imageUrl": "/placeholder.svg",
-        "features": ["Zero-server static preview", "Field focus bridge", "Instant feedback"]
+        "features": [
+          "Zero-server static preview",
+          "Field focus bridge",
+          "Instant feedback"
+        ]
       },
       {
         "id": "clean-packaging",
         "name": "Automated Packager",
         "description": "Automatically produce clean, upload-ready ZIP archives excluding junk and cache files.",
         "imageUrl": "/placeholder.svg",
-        "features": ["Excludes node_modules", "Excludes .next and .git", "100% preflight compliant"]
+        "features": [
+          "Excludes node_modules",
+          "Excludes .next and .git",
+          "100% preflight compliant"
+        ]
       }
     ],
     "contact": {
@@ -112,8 +163,60 @@
       "submitLabel": "Send Message",
       "directMessageText": "Send us a direct message",
       "whatsapp": "+94 77 123 4567"
-    }
+    },
+    "products": [
+      {
+        "id": "prod-1",
+        "title": "Minimalist Ceramic Cup",
+        "description": "Handcrafted matte ceramic cup for your daily espresso or pour-over brew.",
+        "price": 3200,
+        "compareAtPrice": 4000,
+        "currency": "LKR",
+        "imageUrl": "/placeholder.svg",
+        "category": "Ceramics",
+        "badge": "Bestseller",
+        "isAvailable": true
+      },
+      {
+        "id": "prod-2",
+        "title": "Artisan Linen Apron",
+        "description": "Durable pure washed linen apron with deep front utility pockets.",
+        "price": 5400,
+        "compareAtPrice": 6200,
+        "currency": "LKR",
+        "imageUrl": "/placeholder.svg",
+        "category": "Kitchen",
+        "badge": "New",
+        "isAvailable": true
+      },
+      {
+        "id": "prod-3",
+        "title": "Botanical Room Spray",
+        "description": "Natural essential oil room mist infused with wild lavender and cedarwood.",
+        "price": 2800,
+        "compareAtPrice": null,
+        "currency": "LKR",
+        "imageUrl": "/placeholder.svg",
+        "category": "Aromatherapy",
+        "badge": null,
+        "isAvailable": true
+      }
+    ]
   },
   "media": {},
-  "seo": null
+  "seo": null,
+  "siteInstance": {
+    "id": "starter-demo-instance",
+    "slug": "starter-demo",
+    "domain": "starter-demo.fivora.site",
+    "subdomain": "starter-demo",
+    "customDomain": null,
+    "liveUrl": "https://starter-demo.fivora.site"
+  },
+  "api": {
+    "baseUrl": "https://api.fivora.site",
+    "catalogUrl": "https://api.fivora.site/site-catalog/starter-demo/live-data",
+    "contactUrl": "https://api.fivora.site/site-contact",
+    "analyticsUrl": "https://api.fivora.site/site-analytics/page-view"
+  }
 }

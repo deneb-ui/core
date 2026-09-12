@@ -3,6 +3,10 @@
 export {
   SiteDataProvider,
   useSiteData,
+  useProducts,
+  useServices,
+  useSiteCatalog,
+  useSiteApi,
   contentText,
   contentObject,
   contentList,
@@ -15,4 +19,12 @@ export {
   PREVIEW_FIELD_ATTRIBUTE,
 } from '@deneb-ui/ui';
 
-export type { SiteData, SiteDataProviderProps } from '@deneb-ui/ui';
+export type {
+  SiteData,
+  SiteDataProviderProps,
+  SiteDataApiConfig,
+  SiteDataProject,
+  SiteInstanceData,
+  ProductItem,
+  ServiceItem,
+} from '@deneb-ui/ui';
