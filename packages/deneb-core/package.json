@@ -1,6 +1,6 @@
 {
   "name": "@deneb-ui/core",
-  "version": "2.0.38",
+  "version": "2.0.39",
   "description": "Headless style engine for real-time Fivora visual editing — CSS variables, DOM patcher, and preview protocol.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
