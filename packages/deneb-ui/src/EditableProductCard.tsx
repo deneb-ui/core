@@ -2,19 +2,39 @@ import React from 'react';
 import { EditableText } from './EditableText';
 import { EditableImage } from './EditableImage';
 import { EditableBadge } from './EditableText';
+import { MeasurementUnit } from './utils/productOptions';
 
 export interface ProductItem {
   id?: string | number;
   name?: string;
   title?: string;
+  brand?: string;
   price?: string | number;
   originalPrice?: string | number;
   description?: string;
   category?: string;
   imageUrl?: string;
   image?: string;
+  images?: string[];
   badge?: string;
   rating?: number | string;
+  reviewsCount?: number | string;
+  isNew?: boolean;
+  isBestSeller?: boolean;
+
+  // Variants & Measurements System
+  unit?: MeasurementUnit;
+  measurement?: string;
+  optionsLabel?: string;
+  options?: (string | number)[] | string;
+  optionsText?: string;
+  sizes?: (string | number)[] | string;
+  sizesText?: string;
+  sizesLabel?: string;
+  colors?: Array<string | { name: string; hex?: string }> | string;
+  colorsText?: string;
+  colorsLabel?: string;
+
   [key: string]: unknown;
 }
 
@@ -278,6 +298,19 @@ export function EditableProductCard({
                     fontSize: '0.875rem',
                     textDecoration: 'line-through',
                     color: 'var(--muted-text, #94a3b8)',
+                  }}
+                />
+              ) : null}
+              {product?.measurement ? (
+                <EditableText
+                  as="span"
+                  id={`${itemPath}.measurement`}
+                  defaultValue={`/ ${String(product.measurement)}`}
+                  style={{
+                    fontSize: '0.8rem',
+                    fontWeight: 500,
+                    color: 'var(--muted-text, #64748b)',
+                    marginLeft: '0.25rem',
                   }}
                 />
               ) : null}
