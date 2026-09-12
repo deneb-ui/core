@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
 import { withBasePath } from './utils';
+import { resolveProductOptions, MeasurementUnit } from './utils/productOptions';
 import { createWhatsAppUrl } from './utils/urls';
 
 export interface ProductDetailItem {
   id?: string;
   name?: string;
   title?: string;
+  brand?: string;
+  category?: string;
   price?: string | number;
   originalPrice?: string | number;
   description?: string;
@@ -23,6 +26,20 @@ export interface ProductDetailItem {
   relatedTitle?: string;
   whatsappNumber?: string;
   whatsappMessage?: string;
+
+  // Variants & Measurements System
+  unit?: MeasurementUnit;
+  measurement?: string;
+  optionsLabel?: string;
+  options?: (string | number)[];
+  optionsText?: string;
+  sizes?: (string | number)[] | string;
+  sizesText?: string;
+  sizesLabel?: string;
+  colors?: Array<string | { name: string; hex?: string }> | string;
+  colorsText?: string;
+  colorsLabel?: string;
+
   [key: string]: unknown;
 }
 
@@ -92,8 +109,17 @@ export function EditableProductDetail({
     ? product.gallery
     : [product.featuredImage || product.imageUrl || '/products/vanta-aero-x.jpg'];
 
+  const resolved = resolveProductOptions(product);
+  const effectiveOptions =
+    product.options || product.optionsText
+      ? resolved.options
+      : (product.sizes || product.sizesText)
+        ? resolved.options
+        : sizes;
+  const effectiveOptionsLabel = resolved.optionsLabel || 'Available Sizes';
+
   const [activeImage, setActiveImage] = useState(images[0] || '');
-  const [selectedSize, setSelectedSize] = useState(sizes[0] || '');
+  const [selectedSize, setSelectedSize] = useState(effectiveOptions[0] || '');
   const [selectedColor, setSelectedColor] = useState(colors[0]?.name || '');
   const [activeTab, setActiveTab] = useState<'specs' | 'shipping'>('specs');
 
@@ -111,11 +137,12 @@ export function EditableProductDetail({
     product.shippingReturns || '14-day hassle-free exchanges for unworn items in original packaging.'
   );
 
+  const orderSnippet = resolved.formatOrderSnippet(selectedSize, selectedColor);
   const resolvedWhatsappUrl = whatsappUrl || (
     product.whatsappNumber
       ? createWhatsAppUrl(
           product.whatsappNumber,
-          product.whatsappMessage || `Hi, I would like to order ${name} (${selectedSize}, ${selectedColor}) - ${price}`
+          product.whatsappMessage || `Hi, I would like to order ${name}${orderSnippet ? ` ${orderSnippet}` : ''} - ${price}`
         )
       : ''
   );
@@ -236,25 +263,33 @@ export function EditableProductDetail({
               </div>
             )}
 
-            {/* Size Selector */}
-            {sizes.length > 0 && (
+            {/* Options / Size / Measurement Selector */}
+            {effectiveOptions.length > 0 && (
               <div className="mt-8">
-                <span className="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">
-                  Select Size
-                </span>
-                <div className="deneb-product-detail-sizes grid grid-cols-4 sm:grid-cols-7 gap-2">
-                  {sizes.map((s) => (
+                <div className="flex items-center justify-between mb-3">
+                  <span
+                    data-preview-field-path={`${sectionPath}.${product.optionsLabel ? 'optionsLabel' : 'sizesLabel'}`}
+                    className="block text-xs font-bold uppercase tracking-wider text-slate-400"
+                  >
+                    {effectiveOptionsLabel}
+                  </span>
+                  <span className="text-xs font-semibold text-slate-300">
+                    {resolved.formatSelectedDisplay(selectedSize)}
+                  </span>
+                </div>
+                <div className="deneb-product-detail-sizes grid grid-cols-3 sm:grid-cols-6 md:grid-cols-7 gap-2">
+                  {effectiveOptions.map((s) => (
                     <button
                       key={s}
                       type="button"
                       onClick={() => setSelectedSize(s)}
-                      className={`py-2.5 rounded-xl font-bold text-sm transition-all duration-150 ${
+                      className={`py-2.5 px-2 rounded-xl font-bold text-sm transition-all duration-150 ${
                         selectedSize === s
                           ? 'bg-white text-slate-950 shadow-md font-extrabold scale-102'
                           : 'bg-slate-900/60 text-slate-300 border border-slate-800 hover:bg-slate-800 hover:text-white'
                       }`}
                     >
-                      {s}
+                      {resolved.formatOption(s)}
                     </button>
                   ))}
                 </div>
