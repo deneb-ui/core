@@ -4,7 +4,12 @@
   "visualEditing": {
     "contractVersion": 1,
     "mode": "strict",
-    "controlOnlyPaths": ["services[*].id"]
+    "controlOnlyPaths": [
+      "services[*].id",
+      "products[*].id",
+      "products[*].currency",
+      "about.collageImages[*].id"
+    ]
   },
   "siteDataFile": "src/data/site-data.json",
   "outputDirectory": "out",
@@ -12,9 +17,22 @@
   "buildCommand": "npm run build",
   "basePathEnvVar": "NEXT_PUBLIC_SITE_BASE_PATH",
   "pages": [
-    { "id": "home", "label": "Home", "route": "/", "required": true },
-    { "id": "about_us", "label": "About Us", "route": "/about_us" },
-    { "id": "services", "label": "Services", "route": "/services" },
+    {
+      "id": "home",
+      "label": "Home",
+      "route": "/",
+      "required": true
+    },
+    {
+      "id": "about_us",
+      "label": "About Us",
+      "route": "/about_us"
+    },
+    {
+      "id": "services",
+      "label": "Services",
+      "route": "/services"
+    },
     {
       "id": "contact",
       "label": "Contact",
@@ -59,14 +77,38 @@
             "type": "object",
             "label": "Navigation labels",
             "fields": [
-              { "key": "home", "type": "text", "label": "Home label" },
-              { "key": "about_us", "type": "text", "label": "About label" },
-              { "key": "services", "type": "text", "label": "Services label" },
-              { "key": "contact", "type": "text", "label": "Contact label" }
+              {
+                "key": "home",
+                "type": "text",
+                "label": "Home label"
+              },
+              {
+                "key": "about_us",
+                "type": "text",
+                "label": "About label"
+              },
+              {
+                "key": "services",
+                "type": "text",
+                "label": "Services label"
+              },
+              {
+                "key": "contact",
+                "type": "text",
+                "label": "Contact label"
+              }
             ]
           },
-          { "key": "footerHeading", "type": "text", "label": "Footer heading" },
-          { "key": "copyright", "type": "text", "label": "Copyright" }
+          {
+            "key": "footerHeading",
+            "type": "text",
+            "label": "Footer heading"
+          },
+          {
+            "key": "copyright",
+            "type": "text",
+            "label": "Copyright"
+          }
         ]
       },
       {
@@ -76,14 +118,22 @@
         "type": "object",
         "label": "Home Page",
         "fields": [
-          { "key": "heroEyebrow", "type": "text", "label": "Hero eyebrow" },
+          {
+            "key": "heroEyebrow",
+            "type": "text",
+            "label": "Hero eyebrow"
+          },
           {
             "key": "heroTitle",
             "type": "text",
             "label": "Hero title",
             "required": true
           },
-          { "key": "heroSummary", "type": "textarea", "label": "Hero summary" },
+          {
+            "key": "heroSummary",
+            "type": "textarea",
+            "label": "Hero summary"
+          },
           {
             "key": "bannerImageUrl",
             "type": "image",
@@ -129,7 +179,11 @@
                 "label": "Title",
                 "required": true
               },
-              { "key": "body", "type": "textarea", "label": "Description" }
+              {
+                "key": "body",
+                "type": "textarea",
+                "label": "Description"
+              }
             ]
           },
           {
@@ -140,9 +194,27 @@
             "minItems": 0,
             "maxItems": 12,
             "fields": [
-              { "key": "buttonLabel", "type": "text", "label": "Button Label" },
-              { "key": "buttonUrl", "type": "url", "label": "Button Url" }
+              {
+                "key": "buttonLabel",
+                "type": "text",
+                "label": "Button Label"
+              },
+              {
+                "key": "buttonUrl",
+                "type": "url",
+                "label": "Button Url"
+              }
             ]
+          },
+          {
+            "key": "productsHeading",
+            "type": "text",
+            "label": "Featured Products Heading"
+          },
+          {
+            "key": "productsSummary",
+            "type": "textarea",
+            "label": "Featured Products Summary"
           }
         ]
       },
@@ -159,7 +231,11 @@
             "label": "Heading",
             "required": true
           },
-          { "key": "body", "type": "textarea", "label": "About text" },
+          {
+            "key": "body",
+            "type": "textarea",
+            "label": "About text"
+          },
           {
             "key": "imageUrl",
             "type": "image",
@@ -167,10 +243,26 @@
             "recommendedWidth": 1200,
             "recommendedHeight": 900
           },
-          { "key": "collageHeading", "type": "text", "label": "Collage Heading" },
-          { "key": "collageDescription", "type": "textarea", "label": "Collage Description" },
-          { "key": "historyHeading", "type": "text", "label": "History Heading" },
-          { "key": "history", "type": "textarea", "label": "History" },
+          {
+            "key": "collageHeading",
+            "type": "text",
+            "label": "Collage Heading"
+          },
+          {
+            "key": "collageDescription",
+            "type": "textarea",
+            "label": "Collage Description"
+          },
+          {
+            "key": "historyHeading",
+            "type": "text",
+            "label": "History Heading"
+          },
+          {
+            "key": "history",
+            "type": "textarea",
+            "label": "History"
+          },
           {
             "key": "collageImages",
             "type": "list",
@@ -179,8 +271,16 @@
             "minItems": 0,
             "maxItems": 12,
             "fields": [
-              { "key": "image", "type": "image", "label": "Image" },
-              { "key": "caption", "type": "text", "label": "Caption" }
+              {
+                "key": "image",
+                "type": "image",
+                "label": "Image"
+              },
+              {
+                "key": "caption",
+                "type": "text",
+                "label": "Caption"
+              }
             ]
           }
         ]
@@ -198,7 +298,11 @@
             "label": "Heading",
             "required": true
           },
-          { "key": "intro", "type": "textarea", "label": "Introduction" }
+          {
+            "key": "intro",
+            "type": "textarea",
+            "label": "Introduction"
+          }
         ]
       },
       {
@@ -210,9 +314,22 @@
         "minItems": 0,
         "maxItems": 12,
         "fields": [
-          { "key": "id", "type": "text", "label": "System ID" },
-          { "key": "name", "type": "text", "label": "Name", "required": true },
-          { "key": "description", "type": "textarea", "label": "Description" },
+          {
+            "key": "id",
+            "type": "text",
+            "label": "System ID"
+          },
+          {
+            "key": "name",
+            "type": "text",
+            "label": "Name",
+            "required": true
+          },
+          {
+            "key": "description",
+            "type": "textarea",
+            "label": "Description"
+          },
           {
             "key": "imageUrl",
             "type": "image",
@@ -224,7 +341,10 @@
             "key": "features",
             "type": "list",
             "label": "Included features",
-            "itemField": { "type": "text", "label": "Feature" }
+            "itemField": {
+              "type": "text",
+              "label": "Feature"
+            }
           }
         ]
       },
@@ -241,14 +361,103 @@
             "label": "Heading",
             "required": true
           },
-          { "key": "intro", "type": "textarea", "label": "Introduction" },
-          { "key": "phone", "type": "tel", "label": "Phone" },
-          { "key": "email", "type": "email", "label": "Email" },
-          { "key": "address", "type": "textarea", "label": "Address" },
-          { "key": "directionsLabel", "type": "text", "label": "Directions Label" },
-          { "key": "directionsUrl", "type": "url", "label": "Directions Url" },
-          { "key": "formTitle", "type": "text", "label": "Form heading" },
-          { "key": "submitLabel", "type": "text", "label": "Submit button" }
+          {
+            "key": "intro",
+            "type": "textarea",
+            "label": "Introduction"
+          },
+          {
+            "key": "phone",
+            "type": "tel",
+            "label": "Phone"
+          },
+          {
+            "key": "email",
+            "type": "email",
+            "label": "Email"
+          },
+          {
+            "key": "address",
+            "type": "textarea",
+            "label": "Address"
+          },
+          {
+            "key": "directionsLabel",
+            "type": "text",
+            "label": "Directions Label"
+          },
+          {
+            "key": "directionsUrl",
+            "type": "url",
+            "label": "Directions Url"
+          },
+          {
+            "key": "formTitle",
+            "type": "text",
+            "label": "Form heading"
+          },
+          {
+            "key": "submitLabel",
+            "type": "text",
+            "label": "Submit button"
+          }
+        ]
+      },
+      {
+        "id": "products",
+        "path": "products",
+        "type": "list",
+        "label": "Products",
+        "minItems": 0,
+        "maxItems": 24,
+        "fields": [
+          {
+            "key": "id",
+            "type": "text",
+            "label": "Product ID"
+          },
+          {
+            "key": "title",
+            "type": "text",
+            "label": "Title",
+            "required": true
+          },
+          {
+            "key": "description",
+            "type": "textarea",
+            "label": "Description"
+          },
+          {
+            "key": "price",
+            "type": "number",
+            "label": "Price",
+            "required": true
+          },
+          {
+            "key": "compareAtPrice",
+            "type": "number",
+            "label": "Compare Price"
+          },
+          {
+            "key": "currency",
+            "type": "text",
+            "label": "Currency"
+          },
+          {
+            "key": "category",
+            "type": "text",
+            "label": "Category"
+          },
+          {
+            "key": "imageUrl",
+            "type": "image",
+            "label": "Product Image"
+          },
+          {
+            "key": "badge",
+            "type": "text",
+            "label": "Badge"
+          }
         ]
       }
     ]
