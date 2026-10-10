@@ -12,13 +12,14 @@ import {
   DENEB_STYLE_PATCH_MESSAGE,
   patchStyleByPath,
   STYLE_PATCH_MESSAGE,
+  generateThemeVariables,
 } from '@deneb-ui/core';
 import { DenebComponentStyles } from './DenebComponentStyles';
 import { FontLoader } from './fonts/FontLoader';
 import { ResponsiveBaseStyles } from './ResponsiveBaseStyles';
 import type { ProductItem } from './EditableProductCard';
 import type { ServiceItem } from './EditableServiceCard';
-import { ThemeStyles } from './ThemeStyles';
+import { ThemeStyles, type TemplateTheme } from './ThemeStyles';
 
 export const DENEB_PREVIEW_DATA_MESSAGE = 'DENEB_PREVIEW_SITE_DATA';
 export const PREVIEW_DATA_MESSAGE = 'FIVORA_PREVIEW_SITE_DATA';
@@ -119,35 +120,18 @@ export function isDarkColor(color?: unknown): boolean {
 
 export function syncThemeToDocument(theme: unknown) {
   if (typeof document === "undefined" || !isRecord(theme)) return;
+  const vars = generateThemeVariables(theme as any);
   const rootStyle = document.documentElement.style;
-  if (typeof theme.primaryColor === "string") {
-    rootStyle.setProperty("--brand-primary", theme.primaryColor);
-    rootStyle.setProperty("--brand-color", theme.primaryColor);
-    rootStyle.setProperty("--color-primary", theme.primaryColor);
-    const isPrimaryDark = isDarkColor(theme.primaryColor);
-    const autoBtnText = isPrimaryDark ? "#ffffff" : "#0f172a";
-    rootStyle.setProperty("--button-bg", String(theme.buttonBackgroundColor || theme.primaryColor));
-    rootStyle.setProperty("--button-text", String(theme.buttonTextColor || autoBtnText));
-  }
-  if (typeof theme.secondaryColor === "string") {
-    rootStyle.setProperty("--brand-secondary", theme.secondaryColor);
-  }
-  if (typeof theme.accentColor === "string") {
-    rootStyle.setProperty("--brand-accent", theme.accentColor);
-    rootStyle.setProperty("--color-accent", theme.accentColor);
-  }
-  if (typeof theme.backgroundColor === "string") {
-    const isDark = isDarkColor(theme.backgroundColor);
-    document.documentElement.classList.toggle("dark", isDark);
-    document.documentElement.setAttribute("data-theme", isDark ? "dark" : "light");
-    rootStyle.colorScheme = isDark ? "dark" : "light";
-    rootStyle.setProperty("--page-background", theme.backgroundColor);
-    rootStyle.setProperty("--card-bg", isDark ? "#111a2e" : "#ffffff");
-    rootStyle.setProperty("--product-card-bg", isDark ? "#111a2e" : "#ffffff");
-    rootStyle.setProperty("--color-surface", isDark ? "rgba(255,255,255,0.05)" : "#ffffff");
-    rootStyle.setProperty("--color-secondary", isDark ? "rgba(255,255,255,0.08)" : "#f1f5f9");
-    rootStyle.setProperty("--button-secondary-bg", isDark ? "rgba(255,255,255,0.08)" : "#f1f5f9");
-    rootStyle.setProperty("--button-secondary-text", isDark ? "#f8fafc" : "#0f172a");
+  const isDark = isDarkColor(theme.backgroundColor);
+
+  document.documentElement.classList.toggle("dark", isDark);
+  document.documentElement.setAttribute("data-theme", isDark ? "dark" : "light");
+  rootStyle.colorScheme = isDark ? "dark" : "light";
+
+  for (const [key, val] of Object.entries(vars)) {
+    if (key.startsWith("--")) {
+      rootStyle.setProperty(key, val);
+    }
   }
 }
 
@@ -772,10 +756,25 @@ export function SiteDataProvider<T extends SiteData = SiteData>({
     }
   }, [siteData]);
 
+  const resolvedTheme = useMemo(() => {
+    const raw = siteData as unknown as GenericRecord;
+    return (raw?.theme as TemplateTheme) ||
+      ((raw?.template as GenericRecord)?.structure?.theme as TemplateTheme) ||
+      ((initialSiteData as unknown as GenericRecord)?.theme as TemplateTheme) ||
+      (((initialSiteData as unknown as GenericRecord)?.template as GenericRecord)?.structure?.theme as TemplateTheme) ||
+      undefined;
+  }, [siteData, initialSiteData]);
+
+  useEffect(() => {
+    if (resolvedTheme) {
+      syncThemeToDocument(resolvedTheme);
+    }
+  }, [resolvedTheme]);
+
   const value = useMemo(() => siteData as SiteData, [siteData]);
   return (
     <SiteDataContext.Provider value={value}>
-      <ThemeStyles theme={(value as GenericRecord)?.theme as any} />
+      <ThemeStyles theme={resolvedTheme} />
       <FontLoader />
       <ResponsiveBaseStyles />
       <DenebComponentStyles />

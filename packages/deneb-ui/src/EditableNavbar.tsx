@@ -14,6 +14,17 @@ export interface EditableNavbarProps extends React.HTMLAttributes<HTMLElement> {
   sticky?: boolean;
   activeRoute?: string;
   basePath?: string;
+  showSearch?: boolean;
+  searchFieldPath?: string;
+  searchLabel?: string;
+  onSearchClick?: () => void;
+  searchUrl?: string;
+  showCart?: boolean;
+  cartCount?: number;
+  onCartClick?: () => void;
+  showWishlist?: boolean;
+  wishlistCount?: number;
+  onWishlistClick?: () => void;
 }
 
 const DEFAULT_PAGES: NavLinkItem[] = [
@@ -40,8 +51,19 @@ export function EditableNavbar({
   defaultLinks = DEFAULT_PAGES,
   sticky = true,
   activeRoute,
-  basePath = '',
-  className = '',
+  basePath = "",
+  showSearch = true,
+  searchFieldPath = "common.header.searchFramesLabel",
+  searchLabel: customSearchLabel,
+  onSearchClick,
+  searchUrl = "/shop",
+  showCart = false,
+  cartCount,
+  onCartClick,
+  showWishlist = false,
+  wishlistCount,
+  onWishlistClick,
+  className = "",
   style,
   ...props
 }: EditableNavbarProps) {
@@ -56,6 +78,13 @@ export function EditableNavbar({
   const logoUrl = String(common?.logoUrl || shop?.logoUrl || '');
   const headerCtaLabel = String(common?.headerCtaLabel || 'Get in Touch');
   const navLabels = (common?.navLabels || {}) as Record<string, string>;
+  const searchLabel = String(
+    customSearchLabel ||
+    common?.header?.searchFramesLabel ||
+    common?.searchFramesLabel ||
+    common?.searchPlaceholder ||
+    "Search frames"
+  );
 
   const requiredPages = Array.isArray(siteData?.requirements?.requiredPages)
     ? siteData.requirements.requiredPages
@@ -172,6 +201,39 @@ export function EditableNavbar({
           }}
           className="deneb-desktop-nav flex items-center gap-1.5"
         >
+          {showSearch && (
+            <div style={{ marginBottom: "0.5rem" }}>
+              <button
+                type="button"
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  if (onSearchClick) onSearchClick();
+                  else navigate(searchUrl);
+                }}
+                data-preview-static="header-search-toggle"
+                style={{
+                  display: "flex",
+                  width: "100%",
+                  alignItems: "center",
+                  gap: "0.75rem",
+                  padding: "0.625rem 0.875rem",
+                  borderRadius: "8px",
+                  border: "1px solid var(--color-border, #e2e8f0)",
+                  backgroundColor: "transparent",
+                  color: "var(--color-text-muted, #64748b)",
+                  cursor: "pointer",
+                  fontSize: "0.9rem",
+                }}
+                className="w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-lg border border-slate-200 text-slate-500 dark:border-slate-800 dark:text-slate-400"
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" data-preview-static="decorative-icon">
+                  <circle cx="11" cy="11" r="8" />
+                  <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                </svg>
+                <span data-preview-field-path={searchFieldPath}>{searchLabel}</span>
+              </button>
+            </div>
+          )}
           {activeLinks.map((link) => {
             const label = navLabels[link.id] || link.label;
             const isActive = activeRoute === link.route;

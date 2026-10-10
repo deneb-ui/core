@@ -235,9 +235,9 @@ export function EditableFooter({
       style={{
         position: 'relative',
         width: '100%',
-        backgroundColor: '#020617', // slate-950
-        color: '#f8fafc',
-        borderTop: '1px solid rgba(255, 255, 255, 0.08)',
+        backgroundColor: 'var(--footer-bg, var(--page-background, #020617))',
+        color: 'var(--color-text, #f8fafc)',
+        borderTop: '1px solid var(--color-border, rgba(255, 255, 255, 0.08))',
         padding: '4.5rem 1.5rem 2rem',
         ...style,
       }}

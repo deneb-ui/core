@@ -512,7 +512,7 @@ export function buildUniversalTemplateThemeCss(themeValue: unknown): string {
       declaration('gap', read('gridGap')),
     ]),
     rule(
-      'body main :where([data-preview-item-path],[data-design-card],.card,[class*="card-"])',
+      'body main :where([data-preview-style-type="card"],[data-design-card],.card,[class*="card-"]:not([class*="card-list"]):not([class*="card-grid"]))',
       [
         declaration('width', read('cardWidth')),
         read('cardWidth') ? 'max-width:100% !important;' : '',
@@ -534,7 +534,7 @@ export function buildUniversalTemplateThemeCss(themeValue: unknown): string {
       [declaration('text-align', read('cardTextAlign'))],
     ),
     rule(
-      'body main :where(button,a[class*="btn"],a[class*="button"],[data-design-button])',
+      'body main :where([data-design-button],.btn-primary,.button-primary,a[class*="btn-primary"],a[class*="button-primary"],button:not([data-preview-static]):not([aria-label]):not([class*="icon"]):not([class*="close"]):not([class*="toggle"]):not([class*="nav"]))',
       [
         declaration('padding', read('buttonPadding')),
         declaration('border-radius', read('buttonRadius')),
@@ -719,7 +719,7 @@ export function buildUniversalTemplateThemeCss(themeValue: unknown): string {
       header: 'body header',
       footer: 'body footer',
       cards:
-        'body main :where([data-preview-item-path],[data-design-card],.card,[class*="card-"])',
+        'body main :where([data-preview-style-type="card"],[data-design-card],.card,[class*="card-"]:not([class*="card-list"]):not([class*="card-grid"]))',
     };
     const selector =
       specialSelectors[key] ??

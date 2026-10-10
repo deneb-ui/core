@@ -1,5 +1,5 @@
 import React from 'react';
-import { isDarkColor, getAutoContrastTextColor } from '@deneb-ui/core';
+import { isDarkColor, getAutoContrastTextColor, generateThemeVariables } from '@deneb-ui/core';
 import { ResponsiveBaseStyles } from './ResponsiveBaseStyles';
 
 export interface TemplateTheme {
@@ -160,81 +160,10 @@ export function getCategoryTheme(
  * is automatically converted to a CSS variable (e.g. --card-bg: #111).
  */
 export function getThemeCssProperties(theme?: TemplateTheme | null): React.CSSProperties {
-  const customVars: Record<string, string> = {};
-
-  if (theme) {
-    for (const [key, val] of Object.entries(theme)) {
-      if (key !== 'dark' && key !== 'light' && (typeof val === 'string' || typeof val === 'number')) {
-        const cssVarName = `--${key.replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLowerCase()}`;
-        customVars[cssVarName] = String(val);
-      }
-    }
-  }
-
-  const isDark = isDarkColor(theme?.backgroundColor);
-  const bgColor = theme?.backgroundColor || (isDark ? '#090d1a' : '#ffffff');
-  const textColor = theme?.textColor || (isDark ? '#f8fafc' : '#0f172a');
-  const mutedColor = theme?.mutedTextColor || (isDark ? 'rgba(248, 250, 252, 0.7)' : '#64748b');
-  const borderColor = isDark ? 'rgba(255, 255, 255, 0.1)' : '#e2e8f0';
-  const cardBg = isDark ? '#111a2e' : '#ffffff';
-  const cardBorder = isDark ? 'rgba(255, 255, 255, 0.09)' : '#e2e8f0';
-
-  const primaryColor = theme?.primaryColor || '#2563eb';
-  const buttonBg = String(theme?.buttonBackgroundColor || primaryColor || '#2563eb');
-  const autoButtonText = getAutoContrastTextColor(buttonBg);
-  const buttonText = String(theme?.buttonTextColor || autoButtonText);
-  const buttonSecondaryBg = isDark
-    ? 'rgba(255, 255, 255, 0.08)'
-    : (theme?.secondaryColor && !isDarkColor(theme.secondaryColor) ? theme.secondaryColor : '#f1f5f9');
-  const buttonSecondaryText = isDark ? '#f8fafc' : '#0f172a';
-
+  const vars = generateThemeVariables(theme as any);
   return {
-    '--brand-color': primaryColor,
-    '--brand-secondary': theme?.secondaryColor || (isDark ? '#1e293b' : '#0f172a'),
-    '--brand-accent': theme?.accentColor || '#14b8a6',
-    '--page-background': bgColor,
-    '--page-text': textColor,
-    '--heading-color': theme?.headingColor || (isDark ? '#ffffff' : theme?.secondaryColor || '#0f172a'),
-    '--muted-text': mutedColor,
-    '--link-color': theme?.linkColor || primaryColor,
-    '--hero-min-height': theme?.heroMinHeight || '72vh',
-    '--section-padding': theme?.sectionPadding || '5rem',
-    '--base-size': theme?.baseSize || '16px',
-    '--heading-font': theme?.headingFont || 'Inter, sans-serif',
-    '--body-font': theme?.bodyFont || 'Inter, sans-serif',
-    '--border-radius': theme?.borderRadius || '8px',
-    '--content-align': theme?.align || 'left',
-    // Canonical color system tokens for light & dark mode harmony
-    '--color-primary': primaryColor,
-    '--color-secondary': buttonSecondaryBg,
-    '--color-accent': theme?.accentColor || '#14b8a6',
-    '--color-text': textColor,
-    '--color-text-muted': mutedColor,
-    '--color-border': borderColor,
-    '--color-surface': isDark ? 'rgba(255,255,255,0.05)' : '#ffffff',
-    '--card-bg': cardBg,
-    '--card-border': cardBorder,
-    '--product-card-bg': cardBg,
-    '--product-card-border': cardBorder,
-    '--tag-bg': isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(241, 245, 249, 0.9)',
-    '--tag-color': mutedColor,
-    '--card-shadow': isDark ? '0 10px 25px -5px rgba(0, 0, 0, 0.4)' : '0 10px 25px -5px rgba(0, 0, 0, 0.05)',
-    '--header-bg': isDark ? 'rgba(15, 23, 42, 0.85)' : 'rgba(255, 255, 255, 0.82)',
-    '--input-bg': isDark ? '#1e293b' : '#ffffff',
-    '--input-border': isDark ? 'rgba(255, 255, 255, 0.15)' : '#cbd5e1',
-    '--input-color': textColor,
-    // Dedicated Button Design Tokens
-    '--button-bg': buttonBg,
-    '--button-text': buttonText,
-    '--button-primary-bg': buttonBg,
-    '--button-primary-text': buttonText,
-    '--button-secondary-bg': buttonSecondaryBg,
-    '--button-secondary-text': buttonSecondaryText,
-    '--button-outline-border': isDark ? 'rgba(255, 255, 255, 0.22)' : 'currentColor',
-    '--button-outline-text': isDark ? '#f8fafc' : textColor,
-    '--button-ghost-text': isDark ? '#f8fafc' : textColor,
-    fontFamily: theme?.bodyFont || 'Inter, sans-serif',
-    ...customVars,
+    ...vars,
+    fontFamily: (theme?.bodyFont as string) || 'Inter, sans-serif',
   } as React.CSSProperties;
 }
 
@@ -271,6 +200,10 @@ export function ThemeStyles({
     :root {
 ${baseLines}
     }
+    html, body {
+      background-color: var(--page-background, var(--background, #ffffff));
+      color: var(--page-text, var(--color-text, #0f172a));
+    }
   `;
 
   if (enableDualMode) {
@@ -294,6 +227,10 @@ ${baseLines}
     .light, [data-theme="light"] {
 ${lightLines}
     }
+    .light body, [data-theme="light"] body {
+      background-color: var(--page-background, var(--background, #ffffff));
+      color: var(--page-text, var(--color-text, #0f172a));
+    }
       `;
     } else {
       // Base theme is light. Generate dark mode rules for .dark or [data-theme="dark"]
@@ -313,6 +250,10 @@ ${lightLines}
       css += `
     .dark, [data-theme="dark"] {
 ${darkLines}
+    }
+    .dark body, [data-theme="dark"] body {
+      background-color: var(--page-background, var(--background, #090d1a));
+      color: var(--page-text, var(--color-text, #f8fafc));
     }
       `;
     }
