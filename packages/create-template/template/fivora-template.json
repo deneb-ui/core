@@ -43,11 +43,57 @@
       "id": "announcement_bar_preview",
       "label": "Announcement Bar Preview",
       "route": "/announcement-bar-preview"
+    },
+    {
+      "id": "countdown_preview",
+      "label": "Countdown Preview",
+      "route": "/countdown-preview"
     }
   ],
   "editorSchema": {
     "version": 1,
     "sections": [
+      {
+        "id": "countdown_preview",
+        "path": "home.countdown",
+        "pageKey": "countdown_preview",
+        "type": "object",
+        "label": "Flash Sale Countdown",
+        "fields": [
+          {
+            "key": "heading",
+            "type": "text",
+            "label": "Heading"
+          },
+          {
+            "key": "subtitle",
+            "type": "text",
+            "label": "Subtitle"
+          },
+          {
+            "key": "deadline",
+            "type": "text",
+            "label": "Sale end date and time (ISO)",
+            "placeholder": "2026-12-01T23:59+05:30",
+            "description": "Use YYYY-MM-DDTHH:MM with Z or a timezone offset. Example: 2026-12-01T23:59+05:30 (Sri Lanka time). Seconds are optional."
+          },
+          {
+            "key": "expiryMessage",
+            "type": "textarea",
+            "label": "Expiry message"
+          },
+          {
+            "key": "ctaLabel",
+            "type": "text",
+            "label": "CTA label"
+          },
+          {
+            "key": "ctaUrl",
+            "type": "url",
+            "label": "CTA URL"
+          }
+        ]
+      },
       {
         "id": "common",
         "path": "common",
