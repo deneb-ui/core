@@ -1,4 +1,12 @@
 {
+  "styles": {
+    "home.countdown.card": {
+      "backgroundColor": "#193e34"
+    },
+    "home.countdown.text": {
+      "color": "#fffaf0"
+    }
+  },
   "project": {
     "id": "deneb-portfolio-showcase",
     "slug": "deneb-portfolio-showcase",
@@ -59,14 +67,14 @@
         {
           "text": "A little good news: delivery is on us this weekend.",
           "badge": "Delivery",
-          "icon": "\uD83D\uDE9A",
+          "icon": "🚚",
           "linkLabel": "See details",
           "linkUrl": "#preview-details"
         },
         {
           "text": "Meet the latest additions to our collection.",
           "badge": "New",
-          "icon": "\u2728",
+          "icon": "✨",
           "linkLabel": "Explore the collection",
           "linkUrl": "#preview-details"
         },
@@ -108,6 +116,13 @@
       }
     },
     "home": {
+      "countdown": {
+        "heading": "The flash sale ends in",
+        "deadline": "2026-11-05T23:59:59+05:30",
+        "expiryMessage": "This offer has ended. Discover what is new in the collection.",
+        "ctaLabel": "Shop the flash sale",
+        "ctaUrl": "#sale-collection"
+      },
       "heroEyebrow": "⚡ DENEB UI FRAMEWORK",
       "heroTitle": "The Visual-First React Framework for High-Converting Experiences",
       "heroSummary": "Design, build, and ship web storefronts and portfolios with 100% atomic editable components, auto-balancing layouts, and instant dual-mode aesthetics. Built in collaboration with FIVORA Cloud.",

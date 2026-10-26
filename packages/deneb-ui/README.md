@@ -28,6 +28,124 @@
 
 ## Getting Started
 
+### Editable countdown timer
+
+Render inside the existing `SiteDataProvider`:
+
+```tsx
+import { EditableCountdownTimer } from '@deneb-ui/ui';
+
+<EditableCountdownTimer fieldPath="home.countdown" />
+```
+
+Example provider/site-data snapshot (paths are relative to `content`):
+
+```json
+{
+  "content": {
+    "home": {
+      "countdown": {
+        "heading": "Our next launch",
+        "deadline": "2030-12-31T23:59:59+05:30",
+        "expiryMessage": "The launch is here!",
+        "ctaLabel": "Explore the collection",
+        "ctaUrl": "/collections"
+      }
+    }
+  },
+  "styles": {
+    "home.countdown.card": { "backgroundColor": "#0f172a" },
+    "home.countdown.text": { "color": "#ffffff" }
+  }
+}
+```
+
+All content fields have `data-preview-field-path` bindings, including an optional
+`subtitle` (defaults to “Hurry! Offers end soon.”). The URL is
+bound to the anchor and its label to the nested span. Content updates from
+`useSiteData()` drive the rendered text, link, and timer. `fieldPath` defaults
+to `countdown` and supports array indexes. Optional `defaults` supplies fallback
+content; an explicitly empty saved string takes precedence. `className` and
+`style` customize the outer container.
+
+Colors use `useComponentStyle` with existing card/text style targets, as shown
+above; they are style settings rather than additional content fields. The card
+consumes `--deneb-card-bg`; its inner text container consumes `--deneb-color`.
+Additional style targets are `<fieldPath>.heading` (text color),
+`<fieldPath>.digits.card` (backgroundColor, borderRadius for all four number boxes),
+`<fieldPath>.digits.text` (digit color), and `<fieldPath>.cta` (button backgroundColor,
+textColor, borderRadius). The main card also consumes borderRadius. No editor
+infrastructure or dependencies are added.
+
+ISO deadlines must include `T` and either uppercase `Z` or an explicit `+HH:MM` /
+`-HH:MM` offset. Seconds are optional; fractional seconds support 1–3 digits.
+The same deadline field also accepts the readable format
+`01 Dec 2026, 11:59 PM +05:30` (optional seconds before AM/PM) for compatibility.
+The editable deadline always displays ISO text, with its supplied offset and
+precision, so copying it back into Fivora preserves the same timestamp. For
+example, `2026-12-01T23:59+05:30` stays exactly that; no seconds or non-ISO suffix
+are added. Readable legacy input is normalized to ISO for display. The current
+editor schema uses a text field with an ISO example rather than a native picker.
+Invalid calendar dates are rejected. Missing/invalid deadlines show a prompt
+and `--` digits without starting a timer. SSR and the first browser render also
+use `--`; the clock starts after mount. Expired deadlines show zero in every
+unit and the expiry message, with no running interval. Editing the deadline
+restarts the clock; unmounting clears it. The expiry message appears when the
+deadline is reached; edit it through the schema's Expiry message field at any
+time, or select it visually after setting a past deadline. The CTA remains available after
+expiry; empty/unsafe URLs have no navigable `href`.
+
+#### Verify in Fivora Developer Portal
+
+These are manual acceptance steps; actual editor behavior has **not** been verified.
+The Next.js starter includes a separate `/countdown-preview/` route with
+`home.countdown` sample content and its own editor schema/page entry. The original
+`/announcement-bar-preview/` page and its announcement strip remain separate.
+The countdown route imports `@deneb-ui/ui` and uses the layout's existing
+`SiteDataProvider`; it does not import source outside the template or install
+another editor message listener. With an older package that lacks this export,
+only this optional route shows an availability message; other pages keep working.
+
+For local testing, the linked package's `dist` output must contain the new
+component and barrel export. Recompile those outputs after changing the component;
+the preview no longer follows library source edits directly. A standalone copy
+needs an installed package version that exports `EditableCountdownTimer` to show
+the countdown (the currently declared version range does not guarantee that).
+No dependency/version changes are included here.
+
+From the repository root, start the existing Lab workflow:
+
+```powershell
+node .\cli\deneb-cli\bin\index.js lab .\templates\nextjs
+```
+
+Connect the printed controller URL/token in **Developer Portal > Local Test Lab**,
+then choose **Countdown Preview**. The direct URL with default ports is
+`http://127.0.0.1:4174/countdown-preview/`.
+
+1. Confirm the Countdown Preview route renders the timer rather than the
+   availability message, using the locally compiled package export.
+2. Open the preview in Fivora Developer Portal's visual editor. Select the
+   heading and change `home.countdown.heading`; confirm both rendered text and
+   saved content change. Repeat for `subtitle` and `ctaLabel`. Edit `expiryMessage`
+   through its schema field or select it visually with a past deadline.
+3. Select the visible deadline and set it to an explicit-zone ISO timestamp
+   about two minutes in the future. Confirm the digits restart and seconds tick.
+   Change to a past timestamp: confirm zeros and the expiry message. Try an
+   invalid date and a date without a timezone: confirm the prompt and `--` digits.
+4. Select the CTA anchor/URL field (`home.countdown.ctaUrl`), distinct from its
+   nested label. Set `/collections`; verify navigation in the regular preview.
+   Try `javascript:alert(1)` and an empty URL; neither should navigate.
+5. Select style target `home.countdown.card` and change `backgroundColor`.
+   Select `home.countdown.text` and change `color`. Confirm both apply immediately.
+6. Save, reload the preview, and reselect each field/style target. Confirm values
+   persist and the countdown still uses the saved deadline. Check narrow mobile
+   and desktop widths for wrapping and overflow.
+7. Check the browser console for hydration warnings. With a future deadline,
+   navigate away/unmount and back; confirm the old timer stops and a single
+   countdown resumes. If any field cannot be selected or persisted, record it as
+   an editor integration failure; source bindings alone are not verification.
+
 ### Styling the whole editable navbar
 
 `EditableNavbar` (also exported as `Navbar` and `Header`) accepts shared
