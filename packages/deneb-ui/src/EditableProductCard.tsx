@@ -524,6 +524,31 @@ export function EditableProductCard({
     if (cart) {
       cart.addItem(itemToAdd);
       cart.openCart();
+    } else {
+      // Direct decoupled fallback: sync to localStorage and dispatch event for shared cart drawer
+      try {
+        if (typeof window !== 'undefined') {
+          const stored = localStorage.getItem('deneb_cart_items_v1');
+          const list = stored ? JSON.parse(stored) : [];
+          if (Array.isArray(list)) {
+            const targetKey = `${itemToAdd.id}-${itemToAdd.size || ''}-${itemToAdd.color || ''}`;
+            const existingIdx = list.findIndex(
+              (i: any) => `${i.id}-${i.size || ''}-${i.color || ''}` === targetKey,
+            );
+            if (existingIdx > -1) {
+              list[existingIdx].quantity = (list[existingIdx].quantity || 1) + 1;
+            } else {
+              list.push({ ...itemToAdd, quantity: 1 });
+            }
+            localStorage.setItem('deneb_cart_items_v1', JSON.stringify(list));
+          }
+        }
+      } catch {
+        // Ignore quota/private browsing errors
+      }
+    }
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('fivora:cart:add', { detail: itemToAdd }));
     }
     if (onAddToCart) {
       onAddToCart(product);
