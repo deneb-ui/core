@@ -176,6 +176,33 @@ function CartProviderInternal({
     [],
   );
 
+  // Listen for decoupled add-to-cart & open-cart events dispatched across frames, components, or injected scripts
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const handleAdd = (event: Event) => {
+      const customEvent = event as CustomEvent<Omit<CartItem, 'quantity'> & { quantity?: number }>;
+      if (customEvent.detail && customEvent.detail.id) {
+        addItem(customEvent.detail);
+        setIsOpen(true);
+      }
+    };
+    const handleOpen = () => setIsOpen(true);
+    const handleClose = () => setIsOpen(false);
+    const handleToggle = () => setIsOpen((prev) => !prev);
+
+    window.addEventListener('fivora:cart:add', handleAdd);
+    window.addEventListener('fivora:cart:open', handleOpen);
+    window.addEventListener('fivora:cart:close', handleClose);
+    window.addEventListener('fivora:cart:toggle', handleToggle);
+
+    return () => {
+      window.removeEventListener('fivora:cart:add', handleAdd);
+      window.removeEventListener('fivora:cart:open', handleOpen);
+      window.removeEventListener('fivora:cart:close', handleClose);
+      window.removeEventListener('fivora:cart:toggle', handleToggle);
+    };
+  }, [addItem]);
+
   const removeItem = useCallback((id: string, size?: string, color?: string) => {
     const targetKey = getItemKey(id, size, color);
     setItems((prev) =>
