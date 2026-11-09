@@ -5,6 +5,7 @@
 
 export * from './PreviewField';
 export * from './EditableText';
+export * from './EditableCountdownTimer';
 export * from './EditableImage';
 export * from './DenebImage';
 export * from './EditableIcon';
