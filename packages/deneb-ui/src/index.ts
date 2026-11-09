@@ -37,6 +37,7 @@ export * from './EditableFooter';
 export * from './EditableHero';
 export * from './EditableDialog';
 export * from './EditableAnnouncementBar';
+export * from './EditableRotatingAnnouncementBar';
 export * from './EditableCategoryPills';
 export * from './StickyMobileBar';
 export * from './TrustBadges';

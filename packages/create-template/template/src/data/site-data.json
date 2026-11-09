@@ -54,6 +54,31 @@
     "requiredFeatures": []
   },
   "content": {
+    "announcementBarPreview": {
+      "announcements": [
+        {
+          "text": "A little good news: delivery is on us this weekend.",
+          "badge": "Delivery",
+          "icon": "\uD83D\uDE9A",
+          "linkLabel": "See details",
+          "linkUrl": "#preview-details"
+        },
+        {
+          "text": "Meet the latest additions to our collection.",
+          "badge": "New",
+          "icon": "\u2728",
+          "linkLabel": "Explore the collection",
+          "linkUrl": "#preview-details"
+        },
+        {
+          "text": "Questions? Our team is here to help.",
+          "badge": "",
+          "icon": "",
+          "linkLabel": "",
+          "linkUrl": ""
+        }
+      ]
+    },
     "common": {
       "websiteTitle": "DENEB UI — Showcase & Portfolio",
       "shortDescription": "The visual-first React framework for modern storefronts and digital portfolios. Powered by DENEB-UI in collaboration with FIVORA.",

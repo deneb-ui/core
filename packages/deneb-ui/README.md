@@ -28,6 +28,49 @@
 
 ## Getting Started
 
+### Styling the whole editable navbar
+
+`EditableNavbar` (also exported as `Navbar` and `Header`) accepts shared
+`navbarStyles` settings for desktop and mobile:
+
+```tsx
+<EditableNavbar
+  navbarStyles={{
+    fontSize: '18px',
+    fontFamily: 'Arial, sans-serif',
+    fontWeight: 600,
+    color: '#172554',
+    backgroundColor: '#eff6ff',
+    padding: '16px 24px',
+    gap: '24px',
+    linkGap: '12px',
+    border: '1px solid #bfdbfe',
+    borderRadius: '12px',
+    itemBorderRadius: '8px',
+    maxWidth: '1440px',
+  }}
+  partStyles={{ title: { fontSize: '24px' }, cta: { color: '#fff' } }}
+/>
+```
+
+Shared typography includes text size, family, weight, line height, letter spacing,
+text transform, and color. It applies to the title, links, search, CTA, and cart
+badge. A shared color also changes icon colors. Keep CTA/badge contrast readable
+when changing the shared color. `padding` controls the inner bar and mobile drawer;
+`gap` controls bar/action spacing, and `linkGap` controls navigation/drawer spacing.
+
+For saved site data and live previews, place the same settings at
+`content.common.header.navbarStyles`, and per-element styles at
+`content.common.header.navbarPartStyles`. Component props override saved settings;
+`partStyles` overrides shared styles. Supported parts are `inner`, `brand`, `logo`,
+`title`, `links`, `link`, `search`, `actions`, `icon`, `badge`, `cta`, `toggle`, and
+`drawer`. The `link` and `cta` parts apply to both desktop and mobile. Existing
+appearance is preserved when settings are omitted. The standard `style` prop
+continues to style the outer header. In the visual editor, click navbar background
+space to select its container, or select a navbar item and choose the `Whole navbar`
+style scope. Editor styles use the stable `common.header.navbar` target (customizable
+with `stylePath`) and update shared typography on desktop and mobile.
+
 ### Installation
 
 ```bash

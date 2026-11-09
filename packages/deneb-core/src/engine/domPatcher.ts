@@ -51,7 +51,12 @@ export function patchElementStyle(
   const merged = deepMerge(previous, updates);
   if (cacheKey) liveStyleCache.set(cacheKey, merged);
 
-  const cssVars = styleToCssVariables(styleKind, merged);
+  const cssVars = {
+    ...styleToCssVariables(styleKind, merged),
+    ...(element.getAttribute('data-design-section') === 'navbar'
+      ? { ...styleToCssVariables('text', merged), ...styleToCssVariables('card', merged) }
+      : {}),
+  };
   applyCssVariablesToElement(element, cssVars);
 
   // Directly set standard CSS properties on inline style for instant rendering

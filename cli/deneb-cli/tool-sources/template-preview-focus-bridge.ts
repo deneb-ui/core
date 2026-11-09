@@ -8,7 +8,7 @@ import { installUniversalSectionNavigation } from './universal-section-navigatio
 
 export const TEMPLATE_PREVIEW_FOCUS_BRIDGE_FILE =
   '__fivora-preview-focus-bridge.js';
-export const TEMPLATE_PREVIEW_FOCUS_BRIDGE_VERSION = '54';
+export const TEMPLATE_PREVIEW_FOCUS_BRIDGE_VERSION = '55';
 
 const PREVIOUS_PREVIEW_BRIDGE_ATTRIBUTE = `data-${['market', 'place'].join('')}-preview-focus-bridge`;
 
@@ -2877,7 +2877,7 @@ function fivoraPreviewFocusBridge(
     const containerStylePath = element.getAttribute('data-preview-style-target');
     if (containerStylePath && element.getAttribute('data-preview-style-type') === 'card' &&
       !element.hasAttribute(ITEM_PATH_ATTRIBUTE) && !element.hasAttribute(LIST_PATH_ATTRIBUTE)) {
-      return { path: containerStylePath, label: 'Container', type: 'object', value: '' };
+      return { path: containerStylePath, label: element.getAttribute('data-preview-style-label') || 'Container', type: 'object', value: '' };
     }
 
     const itemPath = element.getAttribute(ITEM_PATH_ATTRIBUTE);
@@ -3231,6 +3231,8 @@ function fivoraPreviewFocusBridge(
       styleScopes.push({ kind, key, label });
     };
     pushStyleScope('element', fieldPath, 'This element');
+    const navbarElement = element.closest<HTMLElement>('[data-design-section="navbar"][data-preview-style-target]');
+    pushStyleScope('card', navbarElement?.getAttribute('data-preview-style-target'), 'Whole navbar');
     const cardElement = element.closest<HTMLElement>(
       `[${ITEM_PATH_ATTRIBUTE}]`,
     );

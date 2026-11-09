@@ -36,7 +36,7 @@ const FALLBACK_LOCAL_VISUAL_BRIDGE_SCRIPT = String.raw`
   const LEGACY_ACTIVE_ATTRIBUTE = 'data-' + PREVIOUS_BRAND + '-local-edit-target';
   const LEGACY_SELECTED_ATTRIBUTE = 'data-' + PREVIOUS_BRAND + '-local-selected-target';
   const EDITABLE_SELECTOR =
-    '[data-preview-field-path], [data-preview-list-path], [data-preview-item-path]';
+    '[data-preview-field-path], [data-preview-list-path], [data-preview-item-path], [data-preview-style-target]';
   // The local lab is edit-first when embedded. The portal can still switch the
   // preview back to normal navigation mode with EDIT_MODE_MESSAGE.
   let editMode = window.parent !== window;
@@ -210,6 +210,8 @@ const FALLBACK_LOCAL_VISUAL_BRIDGE_SCRIPT = String.raw`
     const fieldPath = fieldTarget?.getAttribute(FIELD_ATTRIBUTE) || null;
     const listPath = listTarget?.getAttribute(LIST_ATTRIBUTE) || null;
     const itemPath = itemTarget?.getAttribute(ITEM_ATTRIBUTE) || null;
+    const styleTarget = target.closest('[data-preview-style-target]');
+    const stylePath = styleTarget?.getAttribute('data-preview-style-target') || null;
     const descriptor = fieldPath ? descriptors.get(fieldPath) : null;
     const rect = target.getBoundingClientRect();
     const itemIndexMatch = itemPath?.match(/\[(\d+)\](?!.*\[\d+\])/);
@@ -220,6 +222,8 @@ const FALLBACK_LOCAL_VISUAL_BRIDGE_SCRIPT = String.raw`
       styleScopes.push({ kind, key, label });
     };
     pushScope('element', fieldPath, 'This element');
+    const navbarElement = target.closest('[data-design-section="navbar"][data-preview-style-target]');
+    pushScope('card', navbarElement?.getAttribute('data-preview-style-target'), 'Whole navbar');
     pushScope('card', itemPath, 'This card');
     pushScope('grid', listPath, 'Entire grid');
     const pageElement = target.closest('[data-preview-page-key]');
@@ -249,7 +253,8 @@ const FALLBACK_LOCAL_VISUAL_BRIDGE_SCRIPT = String.raw`
 
     const clickPayload = {
       type: CLICK_MESSAGE,
-      fieldPath,
+      fieldPath: fieldPath || stylePath,
+      styleType: styleTarget?.getAttribute('data-preview-style-type') || undefined,
       fieldValue: fieldPath ? fieldValue(fieldTarget || target, fieldPath) : '',
       elementTag: target.tagName.toLowerCase(),
       isImage:
@@ -264,7 +269,7 @@ const FALLBACK_LOCAL_VISUAL_BRIDGE_SCRIPT = String.raw`
       listPath,
       itemPath,
       itemIndex: itemIndexMatch ? Number(itemIndexMatch[1]) : null,
-      descriptorKind: fieldPath ? 'field' : listPath ? 'collection' : null,
+      descriptorKind: fieldPath ? 'field' : listPath ? 'collection' : stylePath ? 'object' : null,
       relatedFields: findRelatedFields(target, fieldPath, itemPath),
       styleScopes,
     };

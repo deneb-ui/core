@@ -38,6 +38,11 @@
       "id": "contact",
       "label": "Contact",
       "route": "/contact"
+    },
+    {
+      "id": "announcement_bar_preview",
+      "label": "Announcement Bar Preview",
+      "route": "/announcement-bar-preview"
     }
   ],
   "editorSchema": {
@@ -569,6 +574,51 @@
             "key": "priceRange",
             "type": "text",
             "label": "Price Range Display"
+          }
+        ]
+      },
+      {
+        "id": "announcement_bar_preview",
+        "path": "announcementBarPreview",
+        "pageKey": "announcement_bar_preview",
+        "type": "object",
+        "label": "Announcement Bar Preview",
+        "fields": [
+          {
+            "key": "announcements",
+            "type": "list",
+            "label": "Announcements",
+            "itemLabel": "Announcement",
+            "minItems": 0,
+            "maxItems": 12,
+            "fields": [
+              {
+                "key": "text",
+                "type": "text",
+                "label": "Text",
+                "required": true
+              },
+              {
+                "key": "badge",
+                "type": "text",
+                "label": "Badge"
+              },
+              {
+                "key": "icon",
+                "type": "text",
+                "label": "Icon (text or emoji)"
+              },
+              {
+                "key": "linkLabel",
+                "type": "text",
+                "label": "Link label"
+              },
+              {
+                "key": "linkUrl",
+                "type": "url",
+                "label": "Link URL"
+              }
+            ]
           }
         ]
       }

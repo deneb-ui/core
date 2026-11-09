@@ -45,6 +45,91 @@ test('style-only card targets resolve as containers rather than text', () => {
   assert.equal(context.canEditInline(card,target.field),false);
 });
 
+test('navbar background resolves as a named container without replacing child fields', () => {
+  const body = new HTMLElement();
+  const navbar = new HTMLElement({
+    'data-preview-style-target': 'common.header.navbar',
+    'data-preview-style-type': 'card',
+    'data-preview-style-label': 'Whole navbar',
+  }, body);
+  navbar.closest = () => null;
+  const context = {
+    Element, HTMLElement, document: {body}, STATIC_ATTRIBUTE: 'data-preview-static',
+    LIST_PATH_ATTRIBUTE: 'data-preview-list-path', ITEM_PATH_ATTRIBUTE: 'data-preview-item-path',
+    RESOLVED_PATH_ATTRIBUTE: 'data-resolved-path', EDITABLE_SELECTOR: 'header',
+    targetRegistry: {getPath: () => null}, editableFields: [],
+  };
+  vm.createContext(context);
+  vm.runInContext(extract('resolveEditableField') + extract('findEditableTarget'), context);
+  const target = context.findEditableTarget(navbar);
+  assert.equal(target.field.path, 'common.header.navbar');
+  assert.equal(target.field.label, 'Whole navbar');
+  assert.equal(target.field.type, 'object');
+});
+
+test('navbar child selection offers the whole navbar scope', () => {
+  const navbar = new HTMLElement({'data-preview-style-target': 'common.header.navbar'});
+  const link = new HTMLElement();
+  link.tagName = 'SPAN';
+  link.textContent = 'Home';
+  link.getBoundingClientRect = () => ({top: 0, left: 0, width: 60, height: 20});
+  link.closest = selector => selector.includes('data-design-section="navbar"') ? navbar : null;
+  const messages = [];
+  const context = {
+    window: {getComputedStyle: () => ({})},
+    extractCollectionContext: () => ({collectionPath: null, itemIndex: null}),
+    ITEM_PATH_ATTRIBUTE: 'data-preview-item-path', LIST_PATH_ATTRIBUTE: 'data-preview-list-path',
+    CLICK_MESSAGE: 'FIVORA_PREVIEW_ELEMENT_CLICKED', LEGACY_CLICK_MESSAGE: 'LEGACY_CLICK',
+    postToParent: message => messages.push(message),
+  };
+  vm.createContext(context);
+  vm.runInContext(extract('emitClickEvent'), context);
+  context.emitClickEvent(link, {path: 'common.navLabels.home', type: 'text', value: 'Home'}, []);
+  assert.equal(messages[0].fieldPath, 'common.navLabels.home');
+  assert.ok(messages[0].styleScopes.some(scope =>
+    scope.key === 'common.header.navbar' && scope.label === 'Whole navbar' && scope.kind === 'card'));
+});
+
+test('navbar restores saved group styles and desktop/mobile text consumes live variables', () => {
+  const React = require('react');
+  const { renderToStaticMarkup } = require('react-dom/server');
+  const { EditableNavbar } = require('../../../../../packages/deneb-ui/dist/EditableNavbar');
+  const { SiteDataContext } = require('../../../../../packages/deneb-ui/dist/SiteDataProvider');
+  const previousUseState = React.useState;
+  React.useState = () => [true, () => {}];
+  try {
+    const html = renderToStaticMarkup(React.createElement(SiteDataContext.Provider, {value: {
+      content: {common: {}}, requirements: {requiredPages: ['home', 'contact']},
+      template: {structure: {theme: {elementStyles: {
+        'common.header.navbar': {fontSize: '22px', fontWeight: 700, backgroundColor: '#abcdef', paddingTop: 12},
+      }}}},
+    }}, React.createElement(EditableNavbar)));
+    assert.match(html, /data-preview-style-target="common.header.navbar"/);
+    assert.match(html, /data-preview-style-label="Whole navbar"/);
+    assert.match(html, /--deneb-font-size:22px/);
+    assert.match(html, /--deneb-card-bg:#abcdef/);
+    assert.match(html, /--deneb-card-pt:12px/);
+    assert.match(html, /deneb-mobile-drawer/);
+    assert.ok((html.match(/font-size:var\(--deneb-font-size/g) || []).length >= 6);
+    assert.match(html, /data-preview-field-path="common.navLabels.home"/);
+  } finally { React.useState = previousUseState; }
+});
+
+test('live navbar container patches include both typography and box styles', () => {
+  const { patchElementStyle } = require('../../../../../packages/deneb-core/dist/engine/domPatcher');
+  const values = new Map();
+  const navbar = new HTMLElement({
+    'data-design-section': 'navbar', 'data-preview-style-target': 'common.header.navbar',
+    'data-preview-style-type': 'card',
+  });
+  navbar.style = {setProperty: (key, value) => values.set(key, value), removeProperty: key => values.delete(key)};
+  patchElementStyle(navbar, 'card', {fontSize: 20, fontWeight: 600, backgroundColor: '#ffffff', paddingTop: 0});
+  assert.equal(values.get('--deneb-font-size'), '20px');
+  assert.equal(values.get('--deneb-font-weight'), '600');
+  assert.equal(values.get('--deneb-card-bg'), '#ffffff');
+  assert.equal(values.get('--deneb-card-pt'), '0px');
+});
+
 test('click messages preserve icon-picker metadata instead of only a text value', () => {
   for (const key of ['footerEmailIcon', 'footerPhoneIcon', 'footerLocationIcon']) {
     const icon = new HTMLElement({
